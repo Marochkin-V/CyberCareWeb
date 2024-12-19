@@ -10,5 +10,7 @@ public interface IComponentRepository
     void Delete(Component entity);
     void Update(Component entity);
     Task SaveChanges();
+    Task<IEnumerable<Component>> GetPageAsync(int page, int pageSize);
+    Task<int> CountAsync();
 }
 

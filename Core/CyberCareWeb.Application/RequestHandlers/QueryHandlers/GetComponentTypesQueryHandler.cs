@@ -22,9 +22,9 @@ public class GetComponentTypesQueryHandler : IRequestHandler<GetComponentTypesQu
     public async Task<PagedResult<ComponentTypeDto>> Handle(GetComponentTypesQuery request, CancellationToken cancellationToken)
     {
         var totalItems = await _repository.CountAsync();
-        var genders = await _repository.GetPageAsync(request.Page, request.PageSize);
+        var componentTypes = await _repository.GetPageAsync(request.Page, request.PageSize);
 
-        var items = _mapper.Map<IEnumerable<ComponentTypeDto>>(genders);
+        var items = _mapper.Map<IEnumerable<ComponentTypeDto>>(componentTypes);
         return new PagedResult<ComponentTypeDto>(items, totalItems, request.Page, request.PageSize);
     }
 }

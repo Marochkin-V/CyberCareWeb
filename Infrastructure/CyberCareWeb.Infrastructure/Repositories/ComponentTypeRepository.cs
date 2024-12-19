@@ -29,13 +29,13 @@ public class ComponentTypeRepository(AppDbContext dbContext) : IComponentTypeRep
 
     public async Task<int> CountAsync()
     {
-        var genders = await _dbContext.ComponentTypes.ToListAsync();
-        return genders.Count();
+        var componentTypes = await _dbContext.ComponentTypes.ToListAsync();
+        return componentTypes.Count();
     }
 
     public async Task<IEnumerable<ComponentType>> GetPageAsync(int page, int pageSize)
     {
-        var genders = await _dbContext.ComponentTypes.OrderBy(d => d.Id).ToListAsync();
-        return genders.Skip((page - 1) * pageSize).Take(pageSize);
+        var componentTypes = await _dbContext.ComponentTypes.OrderBy(d => d.Id).ToListAsync();
+        return componentTypes.Skip((page - 1) * pageSize).Take(pageSize);
     }
 }

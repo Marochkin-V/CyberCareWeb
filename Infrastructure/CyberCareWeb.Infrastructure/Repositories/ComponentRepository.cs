@@ -25,5 +25,17 @@ public class ComponentRepository(AppDbContext dbContext) : IComponentRepository
     public void Update(Component entity) => _dbContext.Components.Update(entity);
 
     public async Task SaveChanges() => await _dbContext.SaveChangesAsync();
+
+    public async Task<int> CountAsync()
+    {
+        var components = await _dbContext.Components.ToListAsync();
+        return components.Count();
+    }
+
+    public async Task<IEnumerable<Component>> GetPageAsync(int page, int pageSize)
+    {
+        var components = await _dbContext.Components.OrderBy(d => d.Id).ToListAsync();
+        return components.Skip((page - 1) * pageSize).Take(pageSize);
+    }
 }
 
