@@ -25,5 +25,17 @@ public class OrderRepository(AppDbContext dbContext) : IOrderRepository
     public void Update(Order entity) => _dbContext.Orders.Update(entity);
 
     public async Task SaveChanges() => await _dbContext.SaveChangesAsync();
+
+    public async Task<int> CountAsync()
+    {
+        var orders = await _dbContext.Orders.ToListAsync();
+        return orders.Count();
+    }
+
+    public async Task<IEnumerable<Order>> GetPageAsync(int page, int pageSize)
+    {
+        var orders = await _dbContext.Orders.OrderBy(d => d.Id).ToListAsync();
+        return orders.Skip((page - 1) * pageSize).Take(pageSize);
+    }
 }
 

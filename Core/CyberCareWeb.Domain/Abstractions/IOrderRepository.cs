@@ -10,5 +10,7 @@ public interface IOrderRepository
     void Delete(Order entity);
     void Update(Order entity);
     Task SaveChanges();
+    Task<IEnumerable<Order>> GetPageAsync(int page, int pageSize);
+    Task<int> CountAsync();
 }
 

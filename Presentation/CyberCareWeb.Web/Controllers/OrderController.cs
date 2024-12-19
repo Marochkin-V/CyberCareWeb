@@ -18,9 +18,9 @@ public class OrderController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var orders = await _mediator.Send(new GetOrdersQuery());
+        var orders = await _mediator.Send(new GetOrdersQuery(page, pageSize));
 
         return Ok(orders);
     }
