@@ -18,9 +18,9 @@ public class ComponentTypeController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var componentTypes = await _mediator.Send(new GetComponentTypesQuery());
+        var componentTypes = await _mediator.Send(new GetComponentTypesQuery(page, pageSize));
 
         return Ok(componentTypes);
     }

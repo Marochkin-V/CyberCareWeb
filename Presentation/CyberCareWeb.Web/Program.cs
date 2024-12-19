@@ -1,65 +1,89 @@
 using AutoMapper;
 using CyberCareWeb.Application;
 using CyberCareWeb.Web.Extensions;
+using CyberCareWeb.Application;
+using CyberCareWeb.Web.Extensions;
 using CyberCareWeb.Application.Requests.Queries;
-using CyberCareWeb.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Добавляем контроллеры
+// Добавление контроллеров (основная логика приложения)
 builder.Services.AddControllers();
 
-// Настроим CORS
+// Настройка CORS (междоменный доступ)
 builder.Services.ConfigureCors();
 
-// Конфигурация DbContext
+// Конфигурация подключения к базе данных
 builder.Services.ConfigureDbContext(builder.Configuration);
 
-// Регистрируем другие сервисы
+// Регистрация сервисов, необходимых для работы приложения
 builder.Services.ConfigureServices();
 
-// Настроим AutoMapper
+// Конфигурация AutoMapper (инструмент для преобразования объектов)
 var mappingConfig = new MapperConfiguration(mc =>
 {
     mc.AddProfile(new MappingProfile());
 });
-
 IMapper autoMapper = mappingConfig.CreateMapper();
 builder.Services.AddSingleton(autoMapper);
 
-// Настроим MediatR
+// Настройка MediatR (посредник для работы с запросами и командами)
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(GetComponentTypesQuery).Assembly));
 
-// Добавление Swagger для документации API
+// Настройка Swagger для документации API
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Подключение Razor Pages и настройка путей для отображения представлений
+builder.Services.AddRazorPages().AddRazorOptions(options =>
+{
+    options.PageViewLocationFormats.Add("/Pages/Shared/{0}.cshtml"); // Путь к общим представлениям
+});
+
 var app = builder.Build();
 
-// Для работы с документацией API в режиме разработки
+// Подключение middleware для обработки статических файлов (например, CSS, JS, изображения)
+app.UseStaticFiles();
+
+// Конфигурация обработки HTTP-запросов
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
+    app.UseSwagger(); // Включение Swagger в режиме разработки
     app.UseSwaggerUI();
 }
 
-// Для обслуживания статических файлов из папки wwwroot
-app.UseStaticFiles(); // Эта строка позволяет серверу отдавать статические файлы (HTML, CSS, JS и т.д.)
+app.UseHttpsRedirection(); // Перенаправление HTTP-запросов на HTTPS
 
-// Перенаправление на страницу index.html по умолчанию
-app.MapFallbackToFile("/index.html"); // Перенаправляем на index.html, если нет других маршрутов.
-
-app.UseHttpsRedirection(); // Перенаправление на HTTPS
-
-// Используем CORS политику
+// Разрешение CORS для кросс-доменных запросов
 app.UseCors("CorsPolicy");
 
-app.UseRouting(); // Используем маршрутизацию
+// Настройка маршрутизации
+app.UseRouting();
 
-app.MapControllers(); // Маппим контроллеры
+// Настройка маршрутов для API
+app.MapControllers();
 
-// Инициализация базы данных при старте приложения
-DbInitializer.Initialize(app.Services, app.Logger);
+// Настройка маршрутов для Razor Pages
+app.MapRazorPages();
 
-app.Run(); // Запускаем приложение
+// Установка маршрута по умолчанию, который перенаправляет на главную страницу
+app.MapGet("/", () => Results.Redirect("/Home/Index"));
+app.MapFallbackToPage("/Home/Index"); // Если маршрут не найден, открывается Home/Index
+
+// Настройка конечных точек маршрутизации
+app.UseEndpoints(endpoints =>
+{
+    // Маршрут для API
+    endpoints.MapControllerRoute(
+        name: "api",
+        pattern: "api/{controller}/{action}/{id?}");
+
+    // Маршрут по умолчанию для остальных страниц
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+});
+
+// Запуск приложения
+app.Run();

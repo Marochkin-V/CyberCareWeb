@@ -1,0 +1,13 @@
+﻿@{
+    Layout = "~/Pages/Shared/Layout.cshtml"; // Указываем путь к макету
+}
+@RenderBody()
+<link rel="stylesheet" href="~/css/modal_list.css" asp-append-version="true" />
+<div id="table-container">
+    <!-- Данные будут загружены сюда через JS -->
+</div>
+<div id="modal" class="modal-info">
+    <div class="modal-info-content">
+        <!--Здесь будет содержимое для отображения подробностей -->
+    </div>
+</div>

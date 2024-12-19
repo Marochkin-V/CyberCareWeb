@@ -6,7 +6,7 @@ using CyberCareWeb.Application.Requests.Queries;
 
 namespace CyberCareWeb.Application.RequestHandlers.QueryHandlers;
 
-public class GetComponentTypesQueryHandler : IRequestHandler<GetComponentTypesQuery, IEnumerable<ComponentTypeDto>>
+public class GetComponentTypesQueryHandler : IRequestHandler<GetComponentTypesQuery, PagedResult<ComponentTypeDto>>
 {
 	private readonly IComponentTypeRepository _repository;
 	private readonly IMapper _mapper;
@@ -17,6 +17,14 @@ public class GetComponentTypesQueryHandler : IRequestHandler<GetComponentTypesQu
 		_mapper = mapper;
 	}
 
-	public async Task<IEnumerable<ComponentTypeDto>> Handle(GetComponentTypesQuery request, CancellationToken cancellationToken) => 
-		_mapper.Map<IEnumerable<ComponentTypeDto>>(await _repository.Get(trackChanges: false));
+	//public async Task<IEnumerable<ComponentTypeDto>> Handle(GetComponentTypesQuery request, CancellationToken cancellationToken) => 
+	//	_mapper.Map<IEnumerable<ComponentTypeDto>>(await _repository.Get(trackChanges: false));
+    public async Task<PagedResult<ComponentTypeDto>> Handle(GetComponentTypesQuery request, CancellationToken cancellationToken)
+    {
+        var totalItems = await _repository.CountAsync();
+        var genders = await _repository.GetPageAsync(request.Page, request.PageSize);
+
+        var items = _mapper.Map<IEnumerable<ComponentTypeDto>>(genders);
+        return new PagedResult<ComponentTypeDto>(items, totalItems, request.Page, request.PageSize);
+    }
 }

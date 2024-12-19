@@ -25,4 +25,11 @@
     <ProjectReference Include="..\..\Infrastructure\CyberCareWeb.Infrastructure\CyberCareWeb.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\js\crud.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
