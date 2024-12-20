@@ -18,6 +18,7 @@ async function loadData(page = 1) {
         const tableTitle = "Компоненты";
         const tableHead = `
             <tr>
+                <th>Тип</th>
                 <th>Бренд</th>
                 <th>Производитель</th>
                 <th>Характеристики</th>
@@ -28,6 +29,7 @@ async function loadData(page = 1) {
         `;
         const tableBody = response.data.items.map(item => `
             <tr data-id="${item.id}">
+                <td data-field="componentType" data-component-type-id="${item.componentTypeId}">${item.componentType.name}</td>
                 <td contenteditable="false">${item.brand}</td>
                 <td contenteditable="false">${item.manufactorer}</td>
                 <td contenteditable="false">${item.specifications}</td>

@@ -81,4 +81,12 @@ public class ComponentController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpGet("componentTypes")]
+    public async Task<IActionResult> GetComponentTypes([FromQuery] string? name = null)
+    {
+        var result = await _mediator.Send(new GetComponentTypesAllQuery());
+
+        return Ok(result);
+    }
 }

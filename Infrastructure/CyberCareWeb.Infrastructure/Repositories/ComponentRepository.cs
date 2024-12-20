@@ -34,7 +34,7 @@ public class ComponentRepository(AppDbContext dbContext) : IComponentRepository
 
     public async Task<IEnumerable<Component>> GetPageAsync(int page, int pageSize)
     {
-        var components = await _dbContext.Components.OrderBy(d => d.Id).ToListAsync();
+        var components = await _dbContext.Components.Include(e => e.ComponentType).OrderBy(d => d.Id).ToListAsync();
         return components.Skip((page - 1) * pageSize).Take(pageSize);
     }
 }
