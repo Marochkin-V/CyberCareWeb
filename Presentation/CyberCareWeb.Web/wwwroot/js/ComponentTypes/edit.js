@@ -1,6 +1,4 @@
-﻿//const apiBaseUrl = "/api/ComponentTypes"; // Базовый URL для ComponentType
-
-function editRow(editButton) {
+﻿function editRow(editButton) {
     const row = editButton.closest('tr');
     const cells = Array.from(row.querySelectorAll('td')).filter(cell => !cell.classList.contains('actions')); // Исключаем столбец действий
     const isEditing = row.classList.contains('editing');
