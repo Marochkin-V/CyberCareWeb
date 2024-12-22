@@ -26,27 +26,33 @@ public class ComponentTypeControllerTests
     {
         // Arrange
         var componentTypes = new List<ComponentTypeDto> { new(), new() };
+        var page = 1;
+        var pageSize = 10;
+
+        var pagedResult = new PagedResult<ComponentTypeDto>(componentTypes,componentTypes.Count,page,pageSize);
 
         _mediatorMock
-            .Setup(m => m.Send(new GetComponentTypesQuery(), CancellationToken.None))
-            .ReturnsAsync(componentTypes);
+            .Setup(m => m.Send(It.Is<GetComponentTypesQuery>(q => q.Page == page && q.PageSize == pageSize), CancellationToken.None))
+            .ReturnsAsync(pagedResult);
 
         // Act
-        var result = await _controller.Get();
+        var result = await _controller.Get(page, pageSize);
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().BeOfType(typeof(OkObjectResult));
+        result.Should().BeOfType<OkObjectResult>();
 
         var okResult = result as OkObjectResult;
         okResult?.StatusCode.Should().Be((int)HttpStatusCode.OK);
 
-        var value = okResult?.Value as List<ComponentTypeDto>;
-        value.Should().HaveCount(2);
-        value.Should().BeEquivalentTo(componentTypes);
+        var value = okResult?.Value as PagedResult<ComponentTypeDto>;
+        value.Should().NotBeNull();
+        value!.Items.Should().HaveCount(2);
+        value.Items.Should().BeEquivalentTo(componentTypes);
 
-        _mediatorMock.Verify(m => m.Send(new GetComponentTypesQuery(), CancellationToken.None), Times.Once);
+        _mediatorMock.Verify(m => m.Send(It.Is<GetComponentTypesQuery>(q => q.Page == page && q.PageSize == pageSize), CancellationToken.None), Times.Once);
     }
+
 
     [Fact]
     public async Task GetById_ExistingComponentTypeId_ReturnsComponentType()

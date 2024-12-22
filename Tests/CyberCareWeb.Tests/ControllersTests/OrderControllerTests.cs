@@ -26,27 +26,30 @@ public class OrderControllerTests
     {
         // Arrange
         var orders = new List<OrderDto> { new(), new() };
+        var pagedResult = new PagedResult<OrderDto>(orders, orders.Count, 1, 10);
 
         _mediatorMock
-            .Setup(m => m.Send(new GetOrdersQuery(), CancellationToken.None))
-            .ReturnsAsync(orders);
+            .Setup(m => m.Send(It.Is<GetOrdersQuery>(q => q.Page == 1 && q.PageSize == 10), CancellationToken.None))
+            .ReturnsAsync(pagedResult);
 
         // Act
         var result = await _controller.Get();
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().BeOfType(typeof(OkObjectResult));
+        result.Should().BeOfType<OkObjectResult>();
 
         var okResult = result as OkObjectResult;
         okResult?.StatusCode.Should().Be((int)HttpStatusCode.OK);
 
-        var value = okResult?.Value as List<OrderDto>;
-        value.Should().HaveCount(2);
-        value.Should().BeEquivalentTo(orders);
+        var value = okResult?.Value as PagedResult<OrderDto>;
+        value.Should().NotBeNull();
+        value!.Items.Should().HaveCount(2);
+        value.Items.Should().BeEquivalentTo(orders);
 
-        _mediatorMock.Verify(m => m.Send(new GetOrdersQuery(), CancellationToken.None), Times.Once);
+        _mediatorMock.Verify(m => m.Send(It.Is<GetOrdersQuery>(q => q.Page == 1 && q.PageSize == 10), CancellationToken.None), Times.Once);
     }
+
 
     [Fact]
     public async Task GetById_ExistingOrderId_ReturnsOrder()
